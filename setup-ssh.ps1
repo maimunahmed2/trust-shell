@@ -13,10 +13,17 @@ if ($sshCap.State -ne 'Installed') {
     Add-WindowsCapability -Online -Name $sshCap.Name | Out-Null
 }
 
-# 2. Start sshd and set it to persist across reboots
+# 2. Set sshd to Automatic BEFORE starting it
 Write-Host "[2/4] Enabling persistent sshd service..." -ForegroundColor Cyan
-Start-Service sshd
 Set-Service -Name sshd -StartupType 'Automatic'
+try {
+    Start-Service sshd -ErrorAction Stop
+} catch {
+    Write-Host "sshd failed to start. Checking OpenSSH diagnostics..." -ForegroundColor Red
+    & "$env:WINDIR\System32\OpenSSH\sshd.exe" -t
+    Get-WinEvent -LogName "OpenSSH/Operational" -MaxEvents 5 -ErrorAction SilentlyContinue | Format-Table TimeCreated, Message -Wrap
+    throw
+}
 
 # 3. Ensure Firewall allows inbound SSH on TCP port 22
 Write-Host "[3/4] Configuring Windows Firewall..." -ForegroundColor Cyan
