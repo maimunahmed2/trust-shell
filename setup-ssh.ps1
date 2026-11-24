@@ -1,7 +1,7 @@
 $ErrorActionPreference = "Stop"
 
 # --- Configuration ---
-$Username = "maimun_ssh"
+$Username = "ssh"
 $PasswordPlain = "~35Maimun~35"
 $GrantAdmin = $true # Set to $false for a standard non-admin user
 
