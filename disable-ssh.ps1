@@ -44,5 +44,6 @@ if (Test-Path $RegistryPath) {
 
 Write-Host "`n[5/5] Rollback completed. Uninstalling OpenSSH Server." -ForegroundColor Green
 # Write-Host "OpenSSH Server remains installed but disabled."
+
 Remove-WindowsCapability -Online -Name OpenSSH.Server~~~~0.0.1.0
-Write-Host "Uninstall complete."
+Write-Host "Uninstall complete." -ForegroundColor Green

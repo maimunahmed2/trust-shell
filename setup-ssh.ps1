@@ -70,3 +70,19 @@ New-ItemProperty -Path "HKLM:\SOFTWARE\OpenSSH" -Name DefaultShell `
 $IPs = (Get-NetIPAddress -AddressFamily IPv4 | Where-Object { $_.InterfaceAlias -notlike "*Loopback*" -and $_.IPAddress -notlike "169.254.*" }).IPAddress
 Write-Host "`nDone! SSH is active and persistent." -ForegroundColor Green
 Write-Host "Connect using: ssh $Username@$($IPs -join ' or ')" -ForegroundColor Green
+
+
+Write-Host "`n====================================" -ForegroundColor Cyan
+Write-Host "        RESTART REQUIRED" -ForegroundColor Yellow
+Write-Host "====================================" -ForegroundColor Cyan
+
+$Restart = Read-Host "Restart computer now? (Y/N)"
+
+if ($Restart -match '^(Y|YES)$') {
+    Write-Host "`nRestarting computer in 10 seconds..." -ForegroundColor Yellow
+    Start-Sleep -Seconds 10
+    Restart-Computer -Force
+}
+else {
+    Write-Host "`nRestart cancelled. Your SSH configuration is complete." -ForegroundColor Green
+}
